@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login | Lesson Logs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Add modern UI libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/images.css') }}">
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row min-vh-100 align-items-center justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <!-- Animated logo entry -->
+                <div class="text-center mb-4 animate__animated animate__fadeInDown">
+                    <div class="logo-container">
+                        <img src="{{ url_for('static', filename='images/logo.png') }}" 
+                             alt="Lesson Logs Logo" 
+                             class="logo-img transparent-img">
+                    </div>
+                    <h1 class="display-5 fw-bold text-primary">Welcome Back</h1>
+                    <p class="lead text-muted">Access your driving lesson dashboard</p>
+                </div>
+
+                <!-- Login card with subtle animation -->
+                <div class="card shadow-lg border-0 animate__animated animate__fadeInUp">
+                    <div class="card-body p-4 p-md-5">
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Login Form -->
+                        <form method="POST" action="{{ url_for('login') }}" class="needs-validation" novalidate>
+                            {{ form.csrf_token }}
+                            <div class="form-floating mb-3">
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       placeholder="name@example.com" 
+                                       required>
+                                <label for="email">Email address</label>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="password" 
+                                       placeholder="Password" 
+                                       required>
+                                <label for="password">Password</label>
+                                <div class="invalid-feedback">
+                                    Please enter your password.
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           id="remember_me" 
+                                           name="remember_me">
+                                    <label class="form-check-label" for="remember_me">
+                                        Remember me
+                                    </label>
+                                </div>
+                                <a href="{{ url_for('reset_password') }}" class="text-primary text-decoration-none">
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                            <button type="submit" 
+                                    class="btn btn-primary w-100 mb-3 py-2">
+                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                            </button>
+                        </form>
+
+                        <!-- Social Login -->
+                        <div class="text-center my-4">
+                            <p class="text-muted">Or continue with</p>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-danger" data-provider="google">
+                                    <i class="fab fa-google me-2"></i> Google
+                                </button>
+                                <button class="btn btn-outline-dark" data-provider="apple">
+                                    <i class="fab fa-apple me-2"></i> Apple
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Registration Link -->
+                        <div class="text-center mt-4">
+                            <p class="mb-0">Don't have an account? 
+                                <a href="{{ url_for('register') }}" 
+                                   class="text-primary text-decoration-none">Create one</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load external libraries first -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Template data script -->
+    <script type="text/javascript">
+        // Create a namespace for our app
+        var App = {
+            data: {
+                flashMessages: JSON.parse('{{ get_flashed_messages(with_categories=true) | tojson | safe }}').map(([category, message]) => ({
+                    category,
+                    message,
+                    title: category === 'success' ? 'Success!' : 'Error!'
+                })),
+                urls: {
+                    google: "{{ url_for('google_login') }}",
+                    apple: "{{ url_for('apple_login') }}"
+                }
+            }
+        };
+    </script>
+
+    <!-- Application JavaScript -->
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            initFormValidation();
+            showFlashMessages();
+            initSocialLogin();
+            initPasswordToggle();
+        });
+
+        function initFormValidation() {
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+            });
+        }
+
+        function showFlashMessages() {
+            if (App.data.flashMessages && App.data.flashMessages.length) {
+                App.data.flashMessages.forEach(msg => {
+                    Swal.fire({
+                        title: msg.title,
+                        text: msg.message,
+                        icon: msg.category,
+                        confirmButtonColor: '#0d6efd'
+                    });
+                });
+            }
+        }
+
+        function initSocialLogin() {
+            document.querySelectorAll('[data-provider]').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault();
+                    const provider = button.dataset.provider;
+                    window.location.href = App.data.urls[provider];
+                });
+            });
+        }
+
+        function initPasswordToggle() {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', () => {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    togglePassword.classList.toggle('fa-eye');
+                    togglePassword.classList.toggle('fa-eye-slash');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

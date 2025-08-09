@@ -1,0 +1,17 @@
+.logo-container {
+    background-color: transparent;
+    padding: 10px;
+}
+
+.logo-img {
+    max-height: 120px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.1));
+}
+
+.transparent-img {
+    mix-blend-mode: multiply;
+    -webkit-filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.1));
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.1));
+} 
