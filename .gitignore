@@ -1,19 +1,23 @@
-# OS / editor
+# OS
 .DS_Store
-*.swp
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
+
+# Env
 .env
-.venv
+.venv/
 venv/
 
-# Flask/SQLAlchemy
-instance/
+# Databases (keep under instance/ only)
 *.db
+!instance/*.db
 
 # Alembic
 migrations/__pycache__/
+
+# Node (if any future frontend)
+node_modules/
+dist/
