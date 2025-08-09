@@ -1,0 +1,19 @@
+# OS / editor
+.DS_Store
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+
+# Flask/SQLAlchemy
+instance/
+*.db
+
+# Alembic
+migrations/__pycache__/
